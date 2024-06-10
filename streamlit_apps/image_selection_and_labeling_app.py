@@ -56,7 +56,7 @@ def save_labeled_data(df):
     st.session_state.labeled_data = df
 
 
-def add_image_data(current_data, new_image_path):
+def add_image_data(current_data, new_image_path, subcategory=''):
     labeled_data = load_labeled_data()
     
     # Check if a row with the same figure name exists
@@ -67,18 +67,20 @@ def add_image_data(current_data, new_image_path):
     # Add new row with data from the original df and additional info
     new_row = current_data.copy()
     new_row['new image path'] = new_image_path
-    new_row['subcategory'] = ''  # Initially empty, to be filled later
+    new_row['subcategory'] = subcategory  # Set the subcategory
 
-    # Append new row to the DataFrame
-    labeled_data = labeled_data.append(new_row, ignore_index=True)
+    # Create a DataFrame from new_row and append it to labeled_data using pd.concat
+    new_row_df = pd.DataFrame([new_row])
+    labeled_data = pd.concat([labeled_data, new_row_df], ignore_index=True)
+
     save_labeled_data(labeled_data)
     st.success(f"New image data saved: {new_image_path}")
 
-
 # Create three columns with specified width ratios
-left_column, middle_column, right_column = st.columns([3, 4.5, 4.5])
+left_column, middle_column, right_column = st.columns([3, 5, 4])
 
 subcategories = [
+    "None Selected",
     "Process Diagram",
     "2x2 Matrix",
     "Venn Diagram",
@@ -100,29 +102,68 @@ subcategories = [
     "Photo"
 ]
 
+
+def compute_view_status(filtered_df, viewed_df, key_columns):
+
+    # Create a DataFrame with just the key columns and a dummy column to merge on
+    viewed_keys = viewed_df[key_columns].drop_duplicates()
+    viewed_keys['is_viewed'] = True  # Mark these as viewed
+    # Merge to identify which entries are viewed
+    merge_result = pd.merge(filtered_df, viewed_keys, on=key_columns, how='left')
+    merge_result['is_viewed'] = merge_result['is_viewed'].fillna(False)
+    return merge_result
+
+
 with left_column:  # Use the left column for selections and displaying the DataFrame
     st.header("1. Figure Page Select")
     year = st.selectbox('Select a Year:', range(2020, 2023), index=0)
-    filtered_df = df[df['year'] == year]
+    if year != st.session_state.get('year', None):
+        st.session_state.year = year
+        st.session_state.current_image_index = 0  # Reset index when year changes
+
+    # Filter data based on selected year
+    filtered_df = df[df['year'] == st.session_state.year]
+
+    # Define columns to check for match
+    key_columns = ['original paper', 'figure name', 'figure number', 'year', 'page number']
+
     if not filtered_df.empty:
         if 'current_image_index' not in st.session_state:
             st.session_state.current_image_index = 0
         
         current_idx = 0
-        if(st.session_state.current_image_index):
+        if st.session_state.current_image_index:
             current_idx = st.session_state.current_image_index 
         max_idx = len(filtered_df) - 1
+
+        def style_rows(row):
+            if(row.name == current_idx):
+                color = 'background-color: yellow'
+            else: 
+                # Determine the background color based on the 'is_viewed' status
+                color = 'background-color: lightgreen' if row['is_viewed'] else 'background-color: #FF8B72'
+            return [color] * len(row)
 
         if st.button('Previous', key='prev_button', use_container_width=True):
             if current_idx > 0:
                 st.session_state.current_image_index -= 1
+                st.session_state.rect_drawn = False
+                if 'crop' in st.session_state:
+                    del st.session_state['crop']
 
         if st.button('Next', key='next_button', use_container_width=True):
             if current_idx < max_idx:
                 st.session_state.current_image_index += 1
+                st.session_state.rect_drawn = False
+                if 'crop' in st.session_state:
+                    del st.session_state['crop']
 
         highlight = filtered_df.index[current_idx]
-        st.dataframe(filtered_df.style.apply(lambda x: ['background-color: yellow' if x.name == highlight else '' for i in x], axis=1), height=700)
+        filtered_df = compute_view_status(filtered_df, viewed_df, key_columns)
+        styled_df = filtered_df.style.apply(style_rows, axis=1)
+        
+        st.dataframe(styled_df, height=700)
+        st.write(f"Files still need to go through: {len(filtered_df['is_viewed'] != True)}")
     else:
         st.write("No data available for this year.")
 
@@ -156,6 +197,7 @@ with middle_column:
             if 'rect_drawn' not in st.session_state:
                 st.session_state.rect_drawn = False
             drawing_mode = "rect" if not st.session_state.rect_drawn else "transform"
+            canvas_key = f"canvas_{st.session_state.current_image_index}{str(year)}"
 
             canvas_result = st_canvas(
                 fill_color="rgba(255, 165, 0, 0.3)", 
@@ -166,7 +208,7 @@ with middle_column:
                 width=canvas_width,
                 height=canvas_height,
                 drawing_mode=drawing_mode,
-                key="canvas",
+                key=canvas_key,
             )
 
             if canvas_result.json_data is not None and 'objects' in canvas_result.json_data:
@@ -188,29 +230,69 @@ with middle_column:
                     save_path = os.path.join(image_directory, figure_name + '.png')
                     crop.save(save_path)
                     st.success(f"Saved cropped image to {save_path}")
-
+                     # Add data for the saved image
+                    add_image_data(current_data, save_path)
         else:
             st.error("Image file not found.")
     else:
         st.write("No image to display.")
 
 
+
+
+
+
 with right_column:
     st.header("3. Categorize Figure")
-    # Example usage inside your existing code
+
+    labeled_data = load_labeled_data()
+
+    # Attempt to fetch current figure data and existing image
+    existing_entry = labeled_data[labeled_data['figure name'] == current_data['figure name']]
+    current_subcategory = existing_entry['subcategory'].iloc[0] if not existing_entry.empty else None
+
+    if not existing_entry.empty:
+        # Setup radio buttons for subcategories
+        radio_key = f"radio_{st.session_state.current_image_index}{str(year)}"
+        selected_subcategory = st.radio(
+            "Select Subcategory:",
+            subcategories,
+            index=subcategories.index(current_subcategory) if current_subcategory in subcategories else 0,
+            key=radio_key
+        )
+
+    # If a cropped image exists in the session state, save it and update the subcategory
     if 'crop' in st.session_state:
-        # Save the cropped image
         save_path = os.path.join(image_directory, figure_name + '.png')
         crop.save(save_path)
-        st.success(f"Saved cropped image to {save_path}")
+        st.image(save_path, caption="Cropped Image")
+        # st.success(f"Saved cropped image to {save_path}")
 
-        # Add data for the saved image
-        add_image_data(current_data, save_path)
-    else:
-        # Check if there is an existing image and no new canvas drawn
-        labeled_data = load_labeled_data()
-        existing_image = labeled_data[labeled_data['figure name'] == current_data['figure name']]['new image path'].values
-        if existing_image:
-            st.image(existing_image[0], caption="Previously saved image")
+        # Update or add image data with subcategory
+        if not existing_entry.empty:
+            # Update existing entry
+            labeled_data.loc[labeled_data['figure name'] == current_data['figure name'], 'subcategory'] = selected_subcategory
+            save_labeled_data(labeled_data)
+            if not existing_entry.empty and existing_entry['subcategory'].iloc[0] != selected_subcategory:
+                if(selected_subcategory != "None Selected"):
+                    st.success("Subcategory updated")
         else:
-            st.write("No image to display.")
+            # Add new data entry
+            add_image_data(current_data, save_path, selected_subcategory)
+
+        # Display the cropped image
+
+    else:
+        # Handle the case when no crop is present but existing data might be shown
+        if existing_entry.empty:
+            st.write("No image to categorize or display.")
+        else:
+            # Display existing labeled image if present
+            existing_image_path = existing_entry['new image path'].iloc[0]
+            st.image(existing_image_path, caption="Previously saved image")
+
+            # Update the subcategory if it has changed
+            if selected_subcategory != current_subcategory:
+                labeled_data.loc[labeled_data['figure name'] == current_data['figure name'], 'subcategory'] = selected_subcategory
+                save_labeled_data(labeled_data)
+                st.success("Subcategory updated")
