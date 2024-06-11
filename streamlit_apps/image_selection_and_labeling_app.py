@@ -81,26 +81,26 @@ def add_image_data(current_data, new_image_path, subcategory=''):
 left_column, middle_column, right_column = st.columns([3, 5, 4])
 
 subcategories = [
-    "None Selected",
-    "Process Diagram",
-    "2x2 Matrix",
-    "Venn Diagram",
-    "Conceptual Diagram",
-    "Cycle",
-    "Hierarchical Diagram",
-    "Bar Chart",
-    "Stacked Bar Chart",
-    "Line Graph",
-    "Scatter Plot",
-    "Mixed statistical plot (more than 1 statistical plot type)",
-    "Data structure",
-    "Data collection, data analysis, data gathering diagrams",
-    "Heatmap",
-    "Data Map",
-    "Organizational Chart",
-    "Timeline",
-    "Drawing",
-    "Photo"
+    "none selected",
+    "process diagram",
+    "2x2 matrix",
+    "venn diagram",
+    "conceptual diagram",
+    "cycle",
+    "hierarchical diagram",
+    "bar chart",
+    "stacked bar chart",
+    "line graph",
+    "scatter plot",
+    "mixed statistical plot (more than 1 statistical plot type)",
+    "data structure",
+    "data collection, data analysis, data gathering diagrams",
+    "heatmap",
+    "data map",
+    "organizational chart",
+    "timeline",
+    "drawing",
+    "photo"
 ]
 
 
