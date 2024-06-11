@@ -92,9 +92,8 @@ subcategories = [
     "Stacked Bar Chart",
     "Line Graph",
     "Scatter Plot",
+    "Mixed statistical plot (more than 1 statistical plot type)",
     "Data structure",
-    "Data display",
-    "Data maps",
     "Data collection, data analysis, data gathering diagrams",
     "Heatmap",
     "Data Map",
@@ -135,7 +134,7 @@ iniital_index = 0
 
 with left_column:  # Use the left column for selections and displaying the DataFrame
     st.header("1. Figure Page Select")
-    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=0)
+    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=list(range(2022, 1999, -1)).index(2022))
 
     if year != st.session_state.get('year', None):
         st.session_state.year = year
