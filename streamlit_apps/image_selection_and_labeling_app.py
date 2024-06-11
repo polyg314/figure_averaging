@@ -7,14 +7,14 @@ from streamlit_drawable_canvas import st_canvas
 # Set page configuration to wide mode
 st.set_page_config(layout="wide")
 
-figure_pages_viewed_path = 'fig_pages_viewed_example.xlsx'
-cropped_and_labeled_figures_path = 'cropped_and_labeled_figs_example.xlsx'
-final_figures_path = 'final_figures_folder_example'
+figure_pages_viewed_path = 'fig_pages_viewed.xlsx'
+cropped_and_labeled_figures_path = 'cropped_and_labeled_figs.xlsx'
+final_figures_path = 'final_figures'
 
 # Load the data from the Excel file
 @st.cache_data
 def load_data():
-    path = 'extracted_figure_pages_example.xlsx'
+    path = 'extracted_figure_pages.xlsx'
     if os.path.exists(path):
         return pd.read_excel(path)
     else:
@@ -90,6 +90,7 @@ subcategories = [
     "Bar Chart",
     "Stacked Bar Chart",
     "Line Graph",
+    "Scatter Plot",
     "Data structure",
     "Data display",
     "Data maps",
@@ -114,15 +115,17 @@ def compute_view_status(filtered_df, viewed_df, key_columns):
     return merge_result
 
 
+
 with left_column:  # Use the left column for selections and displaying the DataFrame
     st.header("1. Figure Page Select")
-    year = st.selectbox('Select a Year:', range(2020, 2023), index=0)
+    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=0)
+
     if year != st.session_state.get('year', None):
         st.session_state.year = year
         st.session_state.current_image_index = 0  # Reset index when year changes
 
     # Filter data based on selected year
-    filtered_df = df[df['year'] == st.session_state.year]
+    filtered_df = df[df['year'] == year]
 
     # Define columns to check for match
     key_columns = ['original paper', 'figure name', 'figure number', 'year', 'page number']
@@ -171,7 +174,7 @@ with left_column:  # Use the left column for selections and displaying the DataF
 with middle_column:
     st.header("2. Crop Figure")
     if not filtered_df.empty:
-        current_data = filtered_df.iloc[current_idx]
+        current_data = filtered_df.iloc[st.session_state.current_image_index]
         columns_to_check = ['original paper', 'figure name', 'figure number', 'year', 'page number']
 
         # Check if the current data row is already in the viewed data based on specified columns
@@ -186,21 +189,30 @@ with middle_column:
         # Ensure the directory exists
         os.makedirs(image_directory, exist_ok=True)
 
-        image_path = os.path.join('extracted_figure_pages_example', str(year), figure_name)
+        image_path = os.path.join('extracted_figure_pages', str(year), figure_name)
         if os.path.exists(image_path):
             image = Image.open(image_path)
             canvas_width = 700
             aspect_ratio = image.width / image.height
             canvas_height = int(canvas_width / aspect_ratio)
 
+            # Ensure session state is initialized properly
+            if 'rect_drawn' not in st.session_state:
+                st.session_state.rect_drawn = False
+
+            if 'current_image_index' not in st.session_state:
+                st.session_state.current_image_index = 0  # Initialize if not already set
+
+
             # Setup canvas drawing mode dynamically
             if 'rect_drawn' not in st.session_state:
                 st.session_state.rect_drawn = False
             drawing_mode = "rect" if not st.session_state.rect_drawn else "transform"
-            canvas_key = f"canvas_{st.session_state.current_image_index}{str(year)}"
+
+            canvas_key = f"canvas_{image_path}"
 
             canvas_result = st_canvas(
-                fill_color="rgba(255, 165, 0, 0.3)", 
+                fill_color="rgba(255, 165, 0, 0.3)",
                 stroke_width=2,
                 stroke_color="#ffffff",
                 background_image=image,
@@ -227,7 +239,7 @@ with middle_column:
                     st.session_state["crop"] = crop
 
                     # Save the cropped image
-                    save_path = os.path.join(image_directory, figure_name + '.png')
+                    save_path = os.path.join(image_directory, figure_name)
                     crop.save(save_path)
                     st.success(f"Saved cropped image to {save_path}")
                      # Add data for the saved image
@@ -263,7 +275,7 @@ with right_column:
 
     # If a cropped image exists in the session state, save it and update the subcategory
     if 'crop' in st.session_state:
-        save_path = os.path.join(image_directory, figure_name + '.png')
+        save_path = os.path.join(image_directory, figure_name)
         crop.save(save_path)
         st.image(save_path, caption="Cropped Image")
         # st.success(f"Saved cropped image to {save_path}")
