@@ -115,26 +115,29 @@ def compute_view_status(filtered_df, viewed_df, key_columns):
     return merge_result
 
 
+iniital_index = 0
+
 
 with left_column:  # Use the left column for selections and displaying the DataFrame
     st.header("1. Figure Page Select")
-    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=0)
+    year = st.selectbox('Select a Year:', range(2021, 1999, -1), index=0)
 
     if year != st.session_state.get('year', None):
         st.session_state.year = year
-        st.session_state.current_image_index = 0  # Reset index when year changes
+        st.session_state.current_image_index = iniital_index  # Reset index when year changes
 
     # Filter data based on selected year
     filtered_df = df[df['year'] == year]
+    filtered_df = filtered_df.sort_values(by=['original paper', 'figure number', 'page number'])
 
     # Define columns to check for match
     key_columns = ['original paper', 'figure name', 'figure number', 'year', 'page number']
 
     if not filtered_df.empty:
         if 'current_image_index' not in st.session_state:
-            st.session_state.current_image_index = 0
+            st.session_state.current_image_index = iniital_index
         
-        current_idx = 0
+        current_idx = iniital_index
         if st.session_state.current_image_index:
             current_idx = st.session_state.current_image_index 
         max_idx = len(filtered_df) - 1
