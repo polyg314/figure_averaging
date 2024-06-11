@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
+import numpy as np
 
 # Set page configuration to wide mode
 st.set_page_config(layout="wide")
@@ -12,7 +13,7 @@ cropped_and_labeled_figures_path = 'cropped_and_labeled_figs.xlsx'
 final_figures_path = 'final_figures'
 
 # Load the data from the Excel file
-@st.cache_data
+# @st.cache_data
 def load_data():
     path = 'extracted_figure_pages.xlsx'
     if os.path.exists(path):
@@ -105,14 +106,28 @@ subcategories = [
 
 
 def compute_view_status(filtered_df, viewed_df, key_columns):
-
-    # Create a DataFrame with just the key columns and a dummy column to merge on
+    # Initialize 'is_viewed' to False for all rows in filtered_df
+    filtered_df['is_viewed'] = False
+    
+    # Create a DataFrame with just the key columns and a dummy column to mark as viewed
     viewed_keys = viewed_df[key_columns].drop_duplicates()
-    viewed_keys['is_viewed'] = True  # Mark these as viewed
-    # Merge to identify which entries are viewed
-    merge_result = pd.merge(filtered_df, viewed_keys, on=key_columns, how='left')
-    merge_result['is_viewed'] = merge_result['is_viewed'].fillna(False)
+    viewed_keys['is_viewed'] = True  # Explicitly mark these as viewed
+    
+    # Perform the merge; this will only affect rows where there's a match
+    merge_result = pd.merge(filtered_df, viewed_keys, on=key_columns, how='left', suffixes=('', '_from_viewed'))
+    
+    # After the merge, update 'is_viewed' where there are matches and only if 'is_viewed_from_viewed' is True
+    merge_result['is_viewed'] = np.where(
+        merge_result['is_viewed_from_viewed'] == True,  # Condition
+        merge_result['is_viewed_from_viewed'],          # Value if condition is True
+        merge_result['is_viewed']                       # Value if condition is False
+    ).astype(bool)
+
+    # Clean up by dropping the temporary column used for merging
+    merge_result.drop(columns='is_viewed_from_viewed', inplace=True)
+    
     return merge_result
+
 
 
 iniital_index = 0
@@ -120,7 +135,7 @@ iniital_index = 0
 
 with left_column:  # Use the left column for selections and displaying the DataFrame
     st.header("1. Figure Page Select")
-    year = st.selectbox('Select a Year:', range(2021, 1999, -1), index=0)
+    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=0)
 
     if year != st.session_state.get('year', None):
         st.session_state.year = year
@@ -128,7 +143,7 @@ with left_column:  # Use the left column for selections and displaying the DataF
 
     # Filter data based on selected year
     filtered_df = df[df['year'] == year]
-    filtered_df = filtered_df.sort_values(by=['original paper', 'figure number', 'page number'])
+    filtered_df = filtered_df.sort_values(by=['original paper', 'figure number', 'page number']).reset_index(drop=True)
 
     # Define columns to check for match
     key_columns = ['original paper', 'figure name', 'figure number', 'year', 'page number']
@@ -169,7 +184,7 @@ with left_column:  # Use the left column for selections and displaying the DataF
         styled_df = filtered_df.style.apply(style_rows, axis=1)
         
         st.dataframe(styled_df, height=700)
-        st.write(f"Files still need to go through: {len(filtered_df['is_viewed'] != True)}")
+        st.write(f"Files still need to go through: {len(filtered_df[filtered_df['is_viewed'] == False])}")
     else:
         st.write("No data available for this year.")
 
