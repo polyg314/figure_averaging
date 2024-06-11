@@ -104,6 +104,16 @@ subcategories = [
 ]
 
 
+# In the following, I am going to provide figures from different peer-reviewed papers, and I want you to classify them according to the following categories each time an new image is passed: 
+
+# Categories: "process diagram", "2x2 matrix", "venn diagram", "conceptual diagram", "cycle", "hierarchical diagram", "bar chart", "stacked bar chart", "line graph", "scatter plot", "mixed statistical plot (more than 1 statistical plot type)", "data structure", "data collection, data analysis, data gathering diagrams", "heatmap", "data map", "organizational chart", "timeline", "drawing", "photo"
+
+# Please choose the category that best represents and most specifically describes the image. Your response should only be an exact string matching one of the categories. 
+
+# If you are ready for me to send images, respond with “OK, ready”.
+
+
+
 def compute_view_status(filtered_df, viewed_df, key_columns):
     # Initialize 'is_viewed' to False for all rows in filtered_df
     filtered_df['is_viewed'] = False
