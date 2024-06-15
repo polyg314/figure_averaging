@@ -25,6 +25,7 @@
     - **extract_figure_pages_from_papers.ipynb** _for extracting figure pages from papers via OCR_
     - **sort_papers_by_year.ipynb** _for initial sorting of papers by year into papers_by_year directory_
     - **view_figure_classificaitons_as_html.ipynb** _for making html outputs showing figure classifications_
+    - **figure_clustering_notebook.ipynb** _for making determining most representative images by subtype/year via clustering analysis_
  
 - **papers**
 
@@ -38,5 +39,13 @@
 
   _folder containing streamlit app, in **image_selection_and_labeling_app.py**, as well as datafile used by streamlit app, **fig_pages_viewed.xlsx**, which is used for tracking which figure pages have been viewed.
 
-  
+- **clustered_images**
+
+  _folder containing images sorted via their clustering analysis, by year. In each yearly folder, you will find🥇
+
+    - **conceptual diagram** _the output for clustering analysis on conceptual diagram subcategory_
+    - **process diagram** _the output for clustering analysis on process diagram subcategory_
+    - **process_and_conceptual** _the output for clustering analysis on subcategory of either process diagram or conceptual diagram_
+    - **diagram_type** _the output for clustering analysis on subcategory of any diagram type_
+    - **no_photos_and_drawings** _the output for clustering analysis on subcategory of any type except photo or drawing_
   
