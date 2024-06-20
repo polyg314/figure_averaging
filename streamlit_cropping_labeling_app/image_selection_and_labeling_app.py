@@ -108,7 +108,9 @@ subcategories = [
     "organizational chart",
     "timeline",
     "drawing",
-    "photo"
+    "photo",
+    "table",
+    "other"
 ]
 
 
@@ -147,12 +149,12 @@ def compute_view_status(filtered_df, viewed_df, key_columns):
 
 
 
-iniital_index = 225
+iniital_index = 0
 
 
 with left_column:  # Use the left column for selections and displaying the DataFrame
     st.header("1. Figure Page Select")
-    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=list(range(2022, 1999, -1)).index(2022))
+    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=list(range(2022, 1999, -1)).index(2018))
 
     if year != st.session_state.get('year', None):
         load_labeled_data(year)
