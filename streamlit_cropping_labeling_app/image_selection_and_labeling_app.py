@@ -98,7 +98,9 @@ subcategories = [
     "stacked bar chart",
     "line graph",
     "scatter plot",
+    "pie chart",
     "mixed statistical plot (more than 1 statistical plot type)",
+    "mixed line, bar, scatter plot",
     "data structure",
     "data collection, data analysis, data gathering diagrams",
     "heatmap",
@@ -145,7 +147,7 @@ def compute_view_status(filtered_df, viewed_df, key_columns):
 
 
 
-iniital_index = 0
+iniital_index = 225
 
 
 with left_column:  # Use the left column for selections and displaying the DataFrame
@@ -156,6 +158,7 @@ with left_column:  # Use the left column for selections and displaying the DataF
         load_labeled_data(year)
         st.session_state.current_image_index = iniital_index  # Reset index when year changes
 
+ 
 
     # Filter data based on selected year
     filtered_df = df[df['year'] == year]
