@@ -144,6 +144,8 @@ def compute_view_status(filtered_df, viewed_df, key_columns):
 
     # Clean up by dropping the temporary column used for merging
     merge_result.drop(columns='is_viewed_from_viewed', inplace=True)
+
+    
     
     return merge_result
 
@@ -154,7 +156,7 @@ iniital_index = 0
 
 with left_column:  # Use the left column for selections and displaying the DataFrame
     st.header("1. Figure Page Select")
-    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=list(range(2022, 1999, -1)).index(2000))
+    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=list(range(2022, 1999, -1)).index(2005))
 
     if year != st.session_state.get('year', None):
         load_labeled_data(year)
