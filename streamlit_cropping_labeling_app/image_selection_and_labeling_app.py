@@ -156,7 +156,7 @@ iniital_index = 0
 
 with left_column:  # Use the left column for selections and displaying the DataFrame
     st.header("1. Figure Page Select")
-    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=list(range(2022, 1999, -1)).index(2011))
+    year = st.selectbox('Select a Year:', range(2022, 1999, -1), index=list(range(2022, 1999, -1)).index(2017))
 
     if year != st.session_state.get('year', None):
         load_labeled_data(year)
