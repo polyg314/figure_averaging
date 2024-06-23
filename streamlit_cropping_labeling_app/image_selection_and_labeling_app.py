@@ -151,7 +151,7 @@ def compute_view_status(filtered_df, viewed_df, key_columns):
 
 
 
-iniital_index = 0
+iniital_index = 185
 
 
 with left_column:  # Use the left column for selections and displaying the DataFrame
