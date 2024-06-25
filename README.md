@@ -22,6 +22,7 @@
   _folder with all notebooks that are used for various tasks within project, including:__
 
     - **chatgpt_classification_notebook.ipynb** _for classifiying images using gpt4o api_
+    - **chatgpt_diagram_analysis_notebook.ipynb** _for classifiying images using gpt4o api_
     - **extract_figure_pages_from_papers.ipynb** _for extracting figure pages from papers via OCR_
     - **sort_papers_by_year.ipynb** _for initial sorting of papers by year into papers_by_year directory_
     - **view_figure_classificaitons_as_html.ipynb** _for making html outputs showing figure classifications_
