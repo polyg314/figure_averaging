@@ -45,7 +45,7 @@
 
 - **clustered_images**
 
-  _folder containing images sorted via their clustering analysis, by year. In each yearly folder, you will find🥇
+  _folder containing images sorted via their clustering analysis, by year. In each yearly folder, you will find:
 
     - **conceptual diagram** _the output for clustering analysis on conceptual diagram subcategory_
     - **process diagram** _the output for clustering analysis on process diagram subcategory_
