@@ -23,9 +23,12 @@
 
     - **chatgpt_classification_notebook.ipynb** _for classifiying images using gpt4o api_
     - **chatgpt_diagram_analysis_notebook.ipynb** _for classifiying images using gpt4o api_
+    - **data_classifcation_ocr.ipynb** _for reclassifying data displays and data collection type diagrams from data structure classified or process diagram and conceptual diagram figures_
+    - **data_cleaning.ipynb** _basic data exploration notebook_
     - **extract_figure_pages_from_papers.ipynb** _for extracting figure pages from papers via OCR_
     - **sort_papers_by_year.ipynb** _for initial sorting of papers by year into papers_by_year directory_
     - **view_figure_classificaitons_as_html.ipynb** _for making html outputs showing figure classifications_
+    - **view_diagram_data_as_html.ipynb** _for making html outputs showing tracked diagram data_
     - **figure_clustering_notebook.ipynb** _for making determining most representative images by subtype/year via clustering analysis_
  
 - **papers**
@@ -48,5 +51,6 @@
     - **process diagram** _the output for clustering analysis on process diagram subcategory_
     - **process_and_conceptual** _the output for clustering analysis on subcategory of either process diagram or conceptual diagram_
     - **diagram_type** _the output for clustering analysis on subcategory of any diagram type_
-    - **no_photos_and_drawings** _the output for clustering analysis on subcategory of any type except photo or drawing_
+    - **no_photos_drawings_other** _the output for clustering analysis on subcategory of any type except photo, drawing, or other_
   
+    **Note: figures that represent the figure closest to the center of clusters will be in most_representatie folder within subcategory clusters. for example, for the most representive conceptual diagram image from 2020 will be in       figure_averaging/clustered_images/2020/conceptual diagram/most_representative/** 
