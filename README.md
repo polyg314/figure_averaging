@@ -53,4 +53,4 @@
     - **diagram_type** _the output for clustering analysis on subcategory of any diagram type_
     - **no_photos_drawings_other** _the output for clustering analysis on subcategory of any type except photo, drawing, or other_
   
-    **Note: figures that represent the figure closest to the center of clusters will be in most_representatie folder within subcategory clusters. for example, for the most representive conceptual diagram image from 2020 will be in       figure_averaging/clustered_images/2020/conceptual diagram/most_representative/** 
+    **Note: figures that represent the figure closest to the center of clusters will be in most_representative folder within subcategory clusters. for example, for the most representive conceptual diagram image from 2020 will be in figure_averaging/clustered_images/2020/conceptual diagram/most_representative/** 
