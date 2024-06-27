@@ -30,6 +30,7 @@
     - **view_figure_classificaitons_as_html.ipynb** _for making html outputs showing figure classifications_
     - **view_diagram_data_as_html.ipynb** _for making html outputs showing tracked diagram data_
     - **figure_clustering_notebook.ipynb** _for making determining most representative images by subtype/year via clustering analysis_
+    - **clustering_for_all_years.ipynb** _clustering for all years, for process and conceptual diagrams, that saves up to 20 of the closest images to the cluster center in each cluster subdirectory_
  
 - **papers**
 
@@ -54,3 +55,5 @@
     - **no_photos_drawings_other** _the output for clustering analysis on subcategory of any type except photo, drawing, or other_
   
     **Note: figures that represent the figure closest to the center of clusters will be in most_representative folder within subcategory clusters. For example, for the most representive conceptual diagram image from 2020 will be in figure_averaging/clustered_images/2020/conceptual diagram/most_representative/** 
+
+    **Note: all/ directory contains clustered image ouput from clustering_for_all_years.ipynb, with up to 20 images closest to cluster center included for each cluster**
