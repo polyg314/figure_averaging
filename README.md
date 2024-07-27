@@ -31,6 +31,7 @@
     - **view_diagram_data_as_html.ipynb** _for making html outputs showing tracked diagram data_
     - **figure_clustering_notebook.ipynb** _for making determining most representative images by subtype/year via clustering analysis_
     - **clustering_for_all_years.ipynb** _clustering for all years, for process and conceptual diagrams, that saves up to 20 of the closest images to the cluster center in each cluster subdirectory_
+    - **text_length_ocr_extraction.ipynb** _extract all text (filtered for numbers and letters only) using OCR and save to excel file text_extracted_from_figures.xlsx in root directory_
  
 - **papers**
 
